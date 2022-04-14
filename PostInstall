@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#Download Plasma DM
+sudo pacman -S mesa xorg-server xorg-apps xorg-xinit xorg-twm xorg-xclock xterm
+startx \
+exit
+sudo pacman -S plasma sddm
+sudo systemctl enable sddm.service
+sudo reboot
+
+#Download new Packages
+sudo pacman -Syyu
+sudo pacman -S konsole firefox git wget curl tree bless
+firefox
+search 'aur' for 'yay', download snapshot
+tar -xzvf /Downloads/yay.tar.gz
+cd yay/
+makepkg -csi 
+yay -Syu
+yay -S brave-bin
+
+#Set up vfio pci groupings
+sudo nano /etc/mkinitcpio.conf
+insert vfio_pci vfio vfio_iommu_type1
+sudo nano /boot/loader/entries/rolling.conf
+add 'options amd_iommu=on iommu=pt' on kernel command line
+sudo reboot
+
+sudo su
