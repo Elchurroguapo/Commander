@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Network Verify
+ip a \
+iwctl \
+station wlan0 connect [SSID] \
+ip a \
+
+# Sync to package servers
+timedatectl set-ntp true
+pacman -Syyy
+
+# Partitions
+cgdisk /dev/nvme0n1 \
+ [delete all]
+gdisk /dev/nvme0n1 \
+ x \
+ z \
+ y \
+ y \
+cgdisk /dev/nvme0n1 \
+ -new 500 MiB ef00 boot \
+ -new 16 GiB 8200 swap \
+ -new default 8300 rootfs
+ write
+mkfs.fat -F32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+swapon /dev/nvme0n1p2
+mkfs.btrfs /dev/nvme0n1p3
+ mount /dev/nvme0n1p3 /mnt
+ cd /mnt
+ btrfs subvolume create @
+ btrfs subvolume create @home
+ cd
+ umount /mnt
+ mount -o noatime,space_cache=v2,compress,zstd,ssd,discard=async,subvol=@ /dev/nvme0n1p3 /mnt
+ mkdir /mnt/{boot,home}
+ mount -o noatime,space_cache=v2,compress,zstd,ssd,discard=async,subvol=@home /dev/nvme0n1p3 /mnt/home
+ mount /dev/nvme0n1p1 /mnt/boot
+ 
+# pacstrap
+pacstrap /mnt base base-devel linux linux-headers linux-firmware nano git amd-ucode
+genfstab -U /mnt >> /mnt/etc/fstab
+git clone https://gitlab.com/eflinux/arch-basic
+cd arch-basic/
+nano base.sh \
+ 
