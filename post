@@ -1,6 +1,0 @@
-# POSTINSTALL
-sudo pacman -Syyu
-sudo pacman -S qbittorrent kate alacritty dolphin chromium
-yay -S timeshift timeshift-autosnap ttf-ms-fonts balena-etcher bitwarden mullvad-vpn tor-browser
-#configure timeshift
--btrfs,next,next,next,finish
