@@ -1,4 +1,4 @@
-#!/bin/bash
+#direct file copy
 
 ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 hwclock --systohc
